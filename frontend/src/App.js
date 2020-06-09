@@ -88,7 +88,7 @@ class App extends React.Component {
             </PrivateRoute>
             <PrivateRoute exact path="/done">
                 <Navigation />
-                <TaskList exact filter="done" />
+                <TaskList exact filter="completed" />
             </PrivateRoute>
             <PrivateRoute path="/edit" component={TaskEdit} />
           </Switch>

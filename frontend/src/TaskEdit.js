@@ -9,10 +9,12 @@ class TaskEdit extends React.Component {
     constructor(props, context) {
         super(props, context);
         if (props.location.state) {
+            this.edit = true;
             this.title = "Edit task";
             this.state = props.location.state
         }
         else {
+            this.edit = false;
             this.title = "Add task";
             let user = context
             this.state = {
@@ -63,22 +65,58 @@ class TaskEdit extends React.Component {
         .catch((err) => console.error(err));
     }
 
+    deleteTask = () => {
+        let user = this.context;
+        let state = this.state;
+        state.loading = true;
+        this.setState(state);
+        fetch("https://fjt42edot8.execute-api.eu-central-1.amazonaws.com/default/scratchlists?username=" + user.username + "&task_id=" + state.task_id, {
+            method: "DELETE",
+            headers: new Headers({
+                "X-Cognito-Token": user.id_token,
+            })
+        })
+        .then(() => this.setState({ redirect: true }))
+        .catch((err) => console.error(err));
+    }
+
     render() {
+
+        let cancelButton = <button type="button" className="btn btn-outline-secondary ml-2" onClick={() => this.setState({ redirect: true })}>Cancel</button>;
+        let deleteButton = (
+            <button type="button" className="btn btn-outline-danger" data-toggle="modal" data-target="#exampleModal">
+                Delete
+            </button>
+        )
+        let saveButton = <input type="submit" className="btn btn-primary ml-2" value="Save" />
+
+        if (this.state.loading) {
+            cancelButton = <button type="button" className="btn btn-outline-secondary ml-2" onClick={() => this.setState({ redirect: true })} disabled>Cancel</button>;
+            deleteButton = (
+                <button type="button" className="btn btn-outline-danger" data-toggle="modal" data-target="#exampleModal" disabled>
+                    Delete
+                </button>
+            )
+            saveButton = (
+                <button className="btn btn-primary ml-2" type="button" disabled>
+                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span className="sr-only">Saving...</span>
+                </button>
+            )
+        }
 
         let buttons = (
             <div className="float-right">
-                <button type="button" className="btn btn-outline-secondary mr-3" onClick={() => this.setState({ redirect: true })}>Cancel</button>
-                <input type="submit" className="btn btn-primary" value="Save" />
+                {cancelButton}
+                {saveButton}
             </div>
         )
-        if (this.state.loading) {
+        if (this.edit) {
             buttons = (
                 <div className="float-right">
-                    <button type="button" className="btn btn-outline-secondary mr-3" disabled>Cancel</button>
-                    <button className="btn btn-primary" type="button" disabled>
-                        <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                        <span className="sr-only">Saving...</span>
-                    </button>
+                    {deleteButton}
+                    {cancelButton}
+                    {saveButton}
                 </div>
             )
         }
@@ -115,6 +153,26 @@ class TaskEdit extends React.Component {
                             </div>
                             {buttons}
                         </form>
+                    </div>
+
+                    <div className="modal fade" id="exampleModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div className="modal-dialog">
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h5 className="modal-title" id="exampleModalLabel">Warning</h5>
+                                    <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div className="modal-body">
+                                    Are you sure you want to delete the task "<b>{this.state.task_to_delete?.task_label}</b>"?
+                                </div>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <button onClick={(e) => { this.deleteTask(e); return true;  }} type="button" className="btn btn-outline-danger" data-dismiss="modal">Delete</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             );
