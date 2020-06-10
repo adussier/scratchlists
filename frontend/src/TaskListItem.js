@@ -33,7 +33,7 @@ class TaskListItem extends React.Component {
         }
 
         let task = this.state.task;
-        let pill = (task.due_date) ? <span className="badge badge-pill badge-warning ml-2">{task.due_date.replace("T", " ")}</span> : "";
+        let pill = (task.due_date) ? <span className="badge badge-pill badge-warning ml-3">{task.due_date.replace("T", " ")}</span> : "";
 
         if (task.task_status === "open") {
             return (
@@ -60,8 +60,9 @@ class TaskListItem extends React.Component {
             return (
                 <div key={task.task_id} className="list-group-item list-group-item-action">
                     <div className="row">
-                        <div className="col-sm-12">
-                            <h5 className="mb-1">{task.task_label}</h5>
+                        <div className="col">
+                            <span className="h5 mb-1">{task.task_label}</span>
+                            <span class="badge badge-pill badge-success float-right">Completed on {task.updated.replace("T", " ").replace("Z", "")}</span>
                             <pre className="mb-1">{task.task_description}</pre>
                         </div>
                     </div>
