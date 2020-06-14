@@ -1,0 +1,17 @@
+{
+  "Comment": "Triggers a reminder for a task with a due date",
+  "StartAt": "Wait",
+  "States": {
+    "Wait": {
+      "Comment": "Wait until the reminder should be sent",
+      "Type": "Wait",
+      "TimestampPath": "$.reminder_timestamp",
+      "Next": "Send reminder"
+    },
+    "Send reminder": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:eu-central-1:622793554726:function:scratchlists-send-reminder",
+      "End": true
+    }
+  }
+}
