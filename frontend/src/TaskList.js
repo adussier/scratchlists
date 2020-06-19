@@ -1,4 +1,5 @@
 import React from 'react';
+import Config from "./config.js"
 import { UserContext } from "./UserContext"
 import { Link } from "react-router-dom";
 import TaskListItem from './TaskListItem';
@@ -15,7 +16,7 @@ class TaskList extends React.Component {
         setTimeout(() => {
             let user = this.context;
             if (user) {
-                fetch(`https://fjt42edot8.execute-api.eu-central-1.amazonaws.com/default/scratchlists?task_status=${this.state.filter}&username=` + user.username, {
+                fetch(`${Config.API_GATEWAY_URL}?task_status=${this.state.filter}&user_id=` + user.username, {
                     headers: new Headers({
                         "X-Cognito-Token": user.id_token,
                     })

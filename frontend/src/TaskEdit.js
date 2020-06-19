@@ -1,4 +1,5 @@
 import React from 'react';
+import Config from "./config.js"
 import { UserContext } from "./UserContext"
 import { v4 as uuidv4 } from 'uuid';
 import Navigation from './Navigation';
@@ -18,7 +19,7 @@ class TaskEdit extends React.Component {
             this.title = "Add task";
             let user = context
             this.state = {
-                username: user.username,
+                user_id: user.username,
                 task_id: uuidv4(),
                 task_label: "",
                 task_description: "",
@@ -51,7 +52,7 @@ class TaskEdit extends React.Component {
         let task = this.state;
         delete task.loading;
         delete task.redirect;
-        fetch("https://fjt42edot8.execute-api.eu-central-1.amazonaws.com/default/scratchlists", {
+        fetch(Config.API_GATEWAY_URL, {
             method: "POST",
             headers: new Headers({
                 "Content-Type": "application/json",
@@ -70,7 +71,7 @@ class TaskEdit extends React.Component {
         let state = this.state;
         state.loading = true;
         this.setState(state);
-        fetch("https://fjt42edot8.execute-api.eu-central-1.amazonaws.com/default/scratchlists?username=" + user.username + "&task_id=" + state.task_id, {
+        fetch(`${Config.API_GATEWAY_URL}?user_id=` + user.username + "&task_id=" + state.task_id, {
             method: "DELETE",
             headers: new Headers({
                 "X-Cognito-Token": user.id_token,

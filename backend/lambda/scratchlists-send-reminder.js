@@ -3,20 +3,19 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
 const cognito = new AWS.CognitoIdentityServiceProvider();
 const ses = new AWS.SES({region: 'eu-central-1'});
 
-exports.handler = async (event) => {
-
+exports.handler = async (task) => {
     // get user
     const user = await cognito.adminGetUser({
       UserPoolId: "eu-central-1_GeUWgPTca",
-      Username: event.username,
+      Username: task.user_id,
     }).promise()
     const email = user.UserAttributes.filter(a => a.Name === "email")[0].Value;
 
     // get task
     let params = {
         Key: {
-            username: event.username,
-            task_id: event.task_id
+            user_id: task.user_id,
+            task_id: task.task_id
         },
         TableName: "Scratchlists"
     };

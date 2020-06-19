@@ -1,4 +1,5 @@
 import React from "react";
+import Config from "./config.js"
 import { UserContext } from "./UserContext"
 import { Link, Redirect } from "react-router-dom";
 
@@ -14,7 +15,7 @@ class TaskListItem extends React.Component {
         if (user) {
             task.task_status = "completed";
             this.setState({ loading: true, items: [] });
-            fetch("https://fjt42edot8.execute-api.eu-central-1.amazonaws.com/default/scratchlists", {
+            fetch(Config.API_GATEWAY_URL, {
                 method: "POST",
                 headers: new Headers({
                     "Content-Type": "application/json",

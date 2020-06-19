@@ -1,4 +1,5 @@
 import React from "react";
+import Config from "./config.js"
 import { Redirect, useLocation } from "react-router-dom";
 
 function getFragmentParameters(fragment) {
@@ -17,7 +18,7 @@ export default function Login(props) {
   let data = getFragmentParameters(location.hash);
   props.setAuthenticated();
 
-  fetch("https://scratchlists.auth.eu-central-1.amazoncognito.com/oauth2/userInfo", {
+  fetch(Config.COGNITO_USERINFO_URL, {
       headers: new Headers({
         Authorization: "Bearer " + data.access_token,
       }),

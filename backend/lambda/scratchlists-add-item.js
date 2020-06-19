@@ -2,38 +2,37 @@ const AWS = require('aws-sdk');
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 const stepFunctions = new AWS.StepFunctions()
 
-exports.handler = async (event) => {
-
-    // add created date for new items
-    if (!event.created) {
-        event.created = new Date().toISOString();
+exports.handler = async (task) => {
+    // set dates
+    if (!task.created) {
+        task.created = new Date().toISOString();
     }
+    task.updated = new Date().toISOString();
 
-    // set last updated date
-    event.updated = new Date().toISOString();
-
-    // cancel existing reminder if set
-    if (event.reminder_id) {
+    // cancel existing reminder (if set)
+    if (task.reminder_id) {
         let params  = {
             cause: "Related task was updated",
             error: "Related task was updated",
-            executionArn: event.reminder_id
+            executionArn: task.reminder_id
         }
 
         await stepFunctions
             .stopExecution(params)
             .promise()
-            .then(() => delete event.reminder_id);
+            .then(() => delete task.reminder_id);
     }
 
-    // set reminder if due date
-    if (event.due_date) {
+    // set reminder (if due date)
+    if (task.due_date) {
+        // step function data input
         let input = {
-            username: event.username,
-            task_id: event.task_id,
-            reminder_timestamp: new Date(event.due_date).toISOString()
+            user_id: task.user_id,
+            task_id: task.task_id,
+            reminder_timestamp: new Date(task.due_date).toISOString()
         }
 
+        // step function execution input
         let params = {
             stateMachineArn: "arn:aws:states:eu-central-1:622793554726:stateMachine:Scratchlists-TriggerReminder",
             input: JSON.stringify(input)
@@ -43,15 +42,15 @@ exports.handler = async (event) => {
             .startExecution(params)
             .promise()
             .then(data => {
-                event.reminder_id = data.executionArn;
+                task.reminder_id = data.executionArn;
             })
             .catch(err => console.log(err));
     }
 
-    // update db
+    // update database
     const params = {
         TableName: "Scratchlists",
-        Item: event
+        Item: task
     }
     await dynamoDb
         .put(params)
