@@ -75,7 +75,7 @@ class TaskList extends React.Component {
         );
 
         const itemList = this.state.items.filter(task => task.task_description.includes(this.state.tag)).map(task =>
-            <TaskListItem task={task} />
+            <TaskListItem key={task.task_id} task={task} />
         )
 
         if (this.state.loading) {

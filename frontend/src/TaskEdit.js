@@ -166,7 +166,7 @@ class TaskEdit extends React.Component {
                                     </button>
                                 </div>
                                 <div className="modal-body">
-                                    Are you sure you want to delete the task "<b>{this.state.task_to_delete?.task_label}</b>"?
+                                    Are you sure you want to delete the task "<b>{this.state.task_label}</b>"?
                                 </div>
                                 <div className="modal-footer">
                                     <button type="button" className="btn btn-secondary" data-dismiss="modal">Cancel</button>
